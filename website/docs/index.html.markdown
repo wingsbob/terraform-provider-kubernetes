@@ -12,8 +12,6 @@ The Kubernetes (K8S) provider is used to interact with the resources supported b
 
 Use the navigation to the left to read about the available resources.
 
--> **Note:** The Kubernetes provider is new as of Terraform 0.9. It is ready to be used but many features are still being added. If there is a Kubernetes feature missing, please report it in the GitHub repo.
-
 ## Example Usage
 
 ```hcl
@@ -97,4 +95,6 @@ The following arguments are supported:
 * `config_context` - (Optional) Context to choose from the config file. Can be sourced from `KUBE_CTX`.
 * `config_context_auth_info` - (Optional) Authentication info context of the kube config (name of the kubeconfig user, `--user` flag in `kubectl`). Can be sourced from `KUBE_CTX_AUTH_INFO`.
 * `config_context_cluster` - (Optional) Cluster context of the kube config (name of the kubeconfig cluster, `--cluster` flag in `kubectl`). Can be sourced from `KUBE_CTX_CLUSTER`.
-* `token` - (Optional) Token of your service account. Can be sourced from `KUBE_TOKEN`.
+* `token` - (Optional) Token of your service account.  Can be sourced from `KUBE_TOKEN`.
+* `load_config_file` - (Optional) By default the local config (~/.kube/config) is loaded when you use this provider. This option at false disable this behaviour. Can be sourced from `KUBE_LOAD_CONFIG_FILE`.
+

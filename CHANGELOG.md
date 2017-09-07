@@ -1,18 +1,42 @@
-## 0.1.2 (Unreleased)
-
-FEATURES:
-
-* **New Resource:** `kubernetes_storage_class` [GH-22]
-* **New Data Source:** `kubernetes_service` [GH-23]
-* **New Data Source:** `kubernetes_storage_class` [GH-33]
-
-IMPROVEMENTS: 
-
-* provider: Add support of token in auth [GH-35]
+## 1.0.1 (Unreleased)
 
 BUG FIXES:
 
-* resource/kubernetes_service: Make port field optional [GH-27]
+* resource/pod: Avoid crash in reading `spec.container.security_context` `capability` [GH-53]
+* resource/replication_controller: Avoid crash in reading `template.container.security_context` `capability` [GH-53]
+
+## 1.0.0 (August 18, 2017)
+
+IMPROVEMENTS:
+
+* resource/kubernetes_pod: Add support for `default_mode`, `items` and `optional` in Secret Volume ([#44](https://github.com/terraform-providers/terraform-provider-kubernetes/issues/44))
+* resource/kubernetes_replication_controller: Add support for `default_mode`, `items` and `optional` in Secret Volume ([#44](https://github.com/terraform-providers/terraform-provider-kubernetes/issues/44))
+
+BUG FIXES:
+
+* resource/kubernetes_pod: Respect previously ignored `node_selectors` field ([#42](https://github.com/terraform-providers/terraform-provider-kubernetes/issues/42))
+* resource/kubernetes_pod: Represent update-ability of spec correctly ([#49](https://github.com/terraform-providers/terraform-provider-kubernetes/issues/49))
+* resource/kubernetes_replication_controller: Respect previously ignored `node_selectors` field ([#42](https://github.com/terraform-providers/terraform-provider-kubernetes/issues/42))
+* all namespaced resources: Avoid crash when importing invalid ID ([#46](https://github.com/terraform-providers/terraform-provider-kubernetes/issues/46))
+* meta: Treat internal k8s annotations as invalid #50
+
+## 0.1.2 (August 04, 2017)
+
+FEATURES:
+
+* **New Resource:** `kubernetes_storage_class` ([#22](https://github.com/terraform-providers/terraform-provider-kubernetes/issues/22))
+* **New Data Source:** `kubernetes_service` ([#23](https://github.com/terraform-providers/terraform-provider-kubernetes/issues/23))
+* **New Data Source:** `kubernetes_storage_class` ([#33](https://github.com/terraform-providers/terraform-provider-kubernetes/issues/33))
+
+IMPROVEMENTS: 
+
+* provider: Add support of token in auth ([#35](https://github.com/terraform-providers/terraform-provider-kubernetes/issues/35))
+* provider: Add switch to disable loading file config (`load_config_file`) ([#36](https://github.com/terraform-providers/terraform-provider-kubernetes/issues/36))
+
+BUG FIXES:
+
+* resource/kubernetes_service: Make port field optional ([#27](https://github.com/terraform-providers/terraform-provider-kubernetes/issues/27))
+* all resources: Escape '/' in JSON Patch path correctly ([#40](https://github.com/terraform-providers/terraform-provider-kubernetes/issues/40))
 
 ## 0.1.1 (July 05, 2017)
 

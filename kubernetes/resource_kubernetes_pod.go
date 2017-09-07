@@ -32,7 +32,7 @@ func resourceKubernetesPod() *schema.Resource {
 				Required:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
-					Schema: podSpecFields(),
+					Schema: podSpecFields(false),
 				},
 			},
 		},
@@ -93,7 +93,12 @@ func resourceKubernetesPodCreate(d *schema.ResourceData, meta interface{}) error
 
 func resourceKubernetesPodUpdate(d *schema.ResourceData, meta interface{}) error {
 	conn := meta.(*kubernetes.Clientset)
-	namespace, name := idParts(d.Id())
+
+	namespace, name, err := idParts(d.Id())
+	if err != nil {
+		return err
+	}
+
 	ops := patchMetadata("metadata.0.", "/metadata/", d)
 	if d.HasChange("spec") {
 		specOps, err := patchPodSpec("/spec", "spec.0.", d)
@@ -107,7 +112,7 @@ func resourceKubernetesPodUpdate(d *schema.ResourceData, meta interface{}) error
 		return fmt.Errorf("Failed to marshal update operations: %s", err)
 	}
 
-	log.Printf("[INFO] Updating  pod %s: %s", d.Id(), ops)
+	log.Printf("[INFO] Updating pod %s: %s", d.Id(), ops)
 
 	out, err := conn.CoreV1().Pods(namespace).Patch(name, pkgApi.JSONPatchType, data)
 	if err != nil {
@@ -121,7 +126,11 @@ func resourceKubernetesPodUpdate(d *schema.ResourceData, meta interface{}) error
 
 func resourceKubernetesPodRead(d *schema.ResourceData, meta interface{}) error {
 	conn := meta.(*kubernetes.Clientset)
-	namespace, name := idParts(d.Id())
+
+	namespace, name, err := idParts(d.Id())
+	if err != nil {
+		return err
+	}
 
 	log.Printf("[INFO] Reading pod %s", name)
 	pod, err := conn.CoreV1().Pods(namespace).Get(name, metav1.GetOptions{})
@@ -151,9 +160,14 @@ func resourceKubernetesPodRead(d *schema.ResourceData, meta interface{}) error {
 
 func resourceKubernetesPodDelete(d *schema.ResourceData, meta interface{}) error {
 	conn := meta.(*kubernetes.Clientset)
-	namespace, name := idParts(d.Id())
+
+	namespace, name, err := idParts(d.Id())
+	if err != nil {
+		return err
+	}
+
 	log.Printf("[INFO] Deleting pod: %#v", name)
-	err := conn.CoreV1().Pods(namespace).Delete(name, nil)
+	err = conn.CoreV1().Pods(namespace).Delete(name, nil)
 	if err != nil {
 		return err
 	}
@@ -184,9 +198,13 @@ func resourceKubernetesPodDelete(d *schema.ResourceData, meta interface{}) error
 func resourceKubernetesPodExists(d *schema.ResourceData, meta interface{}) (bool, error) {
 	conn := meta.(*kubernetes.Clientset)
 
-	namespace, name := idParts(d.Id())
+	namespace, name, err := idParts(d.Id())
+	if err != nil {
+		return false, err
+	}
+
 	log.Printf("[INFO] Checking pod %s", name)
-	_, err := conn.CoreV1().Pods(namespace).Get(name, metav1.GetOptions{})
+	_, err = conn.CoreV1().Pods(namespace).Get(name, metav1.GetOptions{})
 	if err != nil {
 		if statusErr, ok := err.(*errors.StatusError); ok && statusErr.ErrStatus.Code == 404 {
 			return false, nil

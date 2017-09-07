@@ -86,6 +86,8 @@ func TestAccKubernetesService_basic(t *testing.T) {
 }
 
 func TestAccKubernetesService_loadBalancer(t *testing.T) {
+	skipIfNoLoadBalancersAvailable(t)
+
 	var conf api.Service
 	name := fmt.Sprintf("tf-acc-test-%s", acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum))
 
@@ -356,7 +358,12 @@ func testAccCheckKubernetesServiceDestroy(s *terraform.State) error {
 		if rs.Type != "kubernetes_service" {
 			continue
 		}
-		namespace, name := idParts(rs.Primary.ID)
+
+		namespace, name, err := idParts(rs.Primary.ID)
+		if err != nil {
+			return err
+		}
+
 		resp, err := conn.CoreV1().Services(namespace).Get(name, meta_v1.GetOptions{})
 		if err == nil {
 			if resp.Name == rs.Primary.ID {
@@ -376,7 +383,12 @@ func testAccCheckKubernetesServiceExists(n string, obj *api.Service) resource.Te
 		}
 
 		conn := testAccProvider.Meta().(*kubernetes.Clientset)
-		namespace, name := idParts(rs.Primary.ID)
+
+		namespace, name, err := idParts(rs.Primary.ID)
+		if err != nil {
+			return err
+		}
+
 		out, err := conn.CoreV1().Services(namespace).Get(name, meta_v1.GetOptions{})
 		if err != nil {
 			return err

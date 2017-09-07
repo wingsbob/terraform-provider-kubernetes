@@ -21,6 +21,10 @@ func validateAnnotations(value interface{}, key string) (ws []string, es []error
 				es = append(es, fmt.Errorf("%s (%q) %s", key, k, e))
 			}
 		}
+
+		if isInternalKey(k) {
+			es = append(es, fmt.Errorf("%s: %q is internal Kubernetes annotation", key, k))
+		}
 	}
 	return
 }
@@ -176,7 +180,7 @@ func validateModeBits(value interface{}, key string) (ws []string, es []error) {
 func validateAttributeValueDoesNotContain(searchString string) schema.SchemaValidateFunc {
 	return func(v interface{}, k string) (ws []string, errors []error) {
 		input := v.(string)
-		if !strings.Contains(input, searchString) {
+		if strings.Contains(input, searchString) {
 			errors = append(errors, fmt.Errorf(
 				"%q must not contain %q",
 				k, searchString))
